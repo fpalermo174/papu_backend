@@ -5,13 +5,15 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def alexa_webhook():
     data = request.json
-    print("Recibido:", data)
+    req_type = data.get("request", {}).get("type", "")
 
-    # Extraemos lo que dice el usuario
-    user_input = data.get('request', {}).get('intent', {}).get('slots', {}).get('text', {}).get('value', 'Nada recibido')
-
-    # Respuesta de prueba
-    response_text = f"Me dijiste: {user_input}. Aún no estoy muy listo."
+    if req_type == "LaunchRequest":
+        response_text = "¡Hola! Soy Papu, preguntame lo que quieras."
+    elif req_type == "IntentRequest":
+        user_input = data['request']['intent']['slots']['text']['value']
+        response_text = f"Me dijiste: {user_input}. Todavía no tengo una respuesta inteligente, pero estoy aprendiendo."
+    else:
+        response_text = "No entendí qué me estás pidiendo."
 
     return jsonify({
         "version": "1.0",
@@ -20,13 +22,10 @@ def alexa_webhook():
                 "type": "PlainText",
                 "text": response_text
             },
-            "shouldEndSession": True
+            "shouldEndSession": False
         }
     })
 
 @app.route('/', methods=['GET'])
-def health_check():
-    return "Papu está vivo 🚀"
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+def health():
+    return "Papu vive"
