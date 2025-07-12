@@ -15,13 +15,17 @@ Si te preguntan algo sobre Rosario o fútbol, hacé bromas y meté referencias l
 """
 
 def ask_papu(user_prompt):
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # Cambialo a "gpt-4" si tenés acceso
-        prompt=prompt_base + "\n" + user_prompt,
-        max_tokens=100,
-        temperature=0.8
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # o "gpt-4" si tenés acceso
+        messages=[
+            {"role": "system", "content": "Sos Papu, un asistente canchero con humor argentino."},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.8,
+        max_tokens=150
     )
-    return response.choices[0].text.strip()
+
+    return response['choices'][0]['message']['content'].strip()
 
 @app.route('/', methods=['POST'])
 def alexa_webhook():
