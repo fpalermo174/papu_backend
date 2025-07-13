@@ -7,6 +7,11 @@ app = Flask(__name__)
 # API key de OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+# API key de OpenRouter (NO OpenAI)
+openai.api_key = os.environ.get("OPENROUTER_API_KEY")
+openai.api_base = "https://openrouter.ai/api/v1"
+
+
 # Prompt base de Papu canchero
 prompt_base = """
 Sos Papu, un asistente virtual canchero, con humor argentino y directo. Respondés siempre de manera breve, divertida y con un toque sarcástico cuando es posible. 
@@ -27,6 +32,19 @@ def ask_papu(user_prompt):
     )
     return response.choices[0].message.content.strip()
 
+def ask_papu_openrouter(user_prompt):
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="openai/gpt-3.5-turbo",  # O podés usar "anthropic/claude-3-opus-20240229" o similares
+        messages=[
+            {"role": "system", "content": prompt_base},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.8,
+        max_tokens=150
+    )
+    return response.choices[0].message.content.strip()    
+
 @app.route('/', methods=['POST'])
 def alexa_webhook():
     data = request.json
@@ -36,7 +54,7 @@ def alexa_webhook():
         response_text = "¡Hola! Soy Papu, preguntame lo que quieras."
     elif req_type == "IntentRequest":
         user_input = data['request']['intent']['slots']['text']['value']
-        response_text = ask_papu(user_input)
+        response_text = ask_papu_openrouter(user_input)
     else:
         response_text = "No entendí qué me estás pidiendo."
 
