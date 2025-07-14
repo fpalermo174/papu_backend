@@ -44,9 +44,17 @@ def ask_papu_openrouter(user_prompt):
         response = client.chat.completions.create(
             model=modelo, #"openai/gpt-3.5-turbo",  # O podés usar "anthropic/claude-3-opus-20240229" o similares
             messages=[
-                {"role": "system", "content": prompt_base},
-                {"role": "user", "content": user_prompt}
-            ],
+                {
+                    "role": "system", 
+                    "content": prompt_base
+                },
+                {
+                    "role": "user", 
+                    "content": {
+                        "type": "text",
+                        "text": user_prompt
+                    }
+                }],
             temperature=0.8,
             max_tokens=150
         )
