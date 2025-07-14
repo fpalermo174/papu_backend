@@ -42,7 +42,7 @@ def ask_papu_openrouter(user_prompt):
 
         client = openai.OpenAI()
         response = client.chat.completions.create(
-            model="mistralai/mistral-7b-instruct:free", #"openai/gpt-3.5-turbo",  # O podés usar "anthropic/claude-3-opus-20240229" o similares
+            model="mistralai/mistral-7b-instruct", #"openai/gpt-3.5-turbo",  # O podés usar "anthropic/claude-3-opus-20240229" o similares
             messages=[
                 {"role": "system", "content": prompt_base},
                 {"role": "user", "content": user_prompt}
