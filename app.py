@@ -1,6 +1,8 @@
 import os
 import openai
 from flask import Flask, request, jsonify
+from saludo import saludo_aleatorio
+from rosario_central import contiene_pregunta_sobre_central, respuesta_central_random
 
 app = Flask(__name__)
 
@@ -10,6 +12,8 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 # API key de OpenRouter (NO OpenAI)
 openai.api_key = os.environ.get("OPENROUTER_API_KEY")
 openai.api_base = "https://openrouter.ai/api/v1"
+
+
 
 
 # Prompt base de Papu canchero
@@ -70,10 +74,13 @@ def alexa_webhook():
         req_type = data.get("request", {}).get("type", "")
 
         if req_type == "LaunchRequest":
-            response_text = "¡Hola! Soy Papu, preguntame lo que quieras."
+            response_text = saludo_aleatorio()
         elif req_type == "IntentRequest":
             user_input = data['request']['intent']['slots']['text']['value']
-            response_text = ask_papu_openrouter(user_input)
+            if contiene_pregunta_sobre_central(user_input):
+                response_text = respuesta_central_random()
+            else:
+                response_text = ask_papu_openrouter(user_input)
         else:
             response_text = "No entendí qué me estás pidiendo."
 
