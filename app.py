@@ -46,6 +46,7 @@ def ask_papu_openrouter(user_prompt):
     try:
         modelo = os.environ.get("MODEL_NAME")
         client = openai.OpenAI()
+        guardar_log(f"Modelo usado: {modelo}")
         response = client.chat.completions.create(
             model=modelo, #"openai/gpt-3.5-turbo",  # O podés usar "anthropic/claude-3-opus-20240229" o similares
             messages=[
@@ -95,7 +96,7 @@ def alexa_webhook():
             response_text = "No entendí qué me estás pidiendo."
 
         guardar_log(f"RESPUESTA ENVIADA: {response_text}")
-        
+
         return jsonify({
             "version": "1.0",
             "response": {
@@ -122,3 +123,11 @@ def alexa_webhook():
 @app.route('/', methods=['GET'])
 def health():
     return "Papu vive"
+
+@app.route('/logs', methods=['GET'])
+def ver_logs():
+    try:
+        with open("log.txt", encoding="utf-8") as f:
+            return f"<pre>{f.read()}</pre>"
+    except Exception as e:
+        return f"No se pudo leer el log: {e}"
